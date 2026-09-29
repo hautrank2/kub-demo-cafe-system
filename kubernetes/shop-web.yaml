@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
         - name: shop-web
-          image: hautrank2/cafe-shop:1
+          image: hautrank2/kub-cafe-shop:1
           imagePullPolicy: Always
           ports:
             - containerPort: 80

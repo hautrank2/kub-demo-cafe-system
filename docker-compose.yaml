@@ -6,7 +6,7 @@ services:
 
   cafe-auth-service:
     build: ./auth-api
-    image: hautrank2/cafe-auth:1
+    image: hautrank2/kub-cafe-auth:1
     environment:
       TOKEN_KEY: 'doi-chuoi-nay-di'
       ADMIN_EMAIL: 'admin@cafe.local'
@@ -14,7 +14,7 @@ services:
 
   cafe-menu-service:
     build: ./menu-api
-    image: hautrank2/cafe-menu:1
+    image: hautrank2/kub-cafe-menu:1
     environment:
       MONGODB_URI: 'mongodb://cafe-mongo-service:27017/cafe'
       AUTH_ADDRESS: 'cafe-auth-service:3000'
@@ -24,20 +24,20 @@ services:
 
   cafe-order-service:
     build: ./order-api
-    image: hautrank2/cafe-order:1
+    image: hautrank2/kub-cafe-order:1
     environment:
       MONGODB_URI: 'mongodb://cafe-mongo-service:27017/cafe'
       AUTH_ADDRESS: 'cafe-auth-service:3000'
 
   shop-web:
     build: ./shop-web
-    image: hautrank2/cafe-shop:1
+    image: hautrank2/kub-cafe-shop:1
     ports:
       - '8210:80'
 
   admin-web:
     build: ./admin-web
-    image: hautrank2/cafe-admin:1
+    image: hautrank2/kub-cafe-admin:1
     ports:
       - '8211:80'
 

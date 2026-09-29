@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
         - name: admin-web
-          image: hautrank2/cafe-admin:1
+          image: hautrank2/kub-cafe-admin:1
           imagePullPolicy: Always
           ports:
             - containerPort: 80

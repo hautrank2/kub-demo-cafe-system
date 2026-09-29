@@ -29,7 +29,7 @@ spec:
       containers:
         - name: auth-api
           # Thay bằng tài khoản Docker Hub của bạn, và tăng tag mỗi lần build lại.
-          image: hautrank2/cafe-auth:1
+          image: hautrank2/kub-cafe-auth:1
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
