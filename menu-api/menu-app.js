@@ -203,23 +203,6 @@ app.put('/menu/items/:id/image', requireAdmin, uploadImage, async (req, res) => 
   }
 });
 
-// Xoá bản ghi trước, file sau. Đơn cũ không bị ảnh hưởng: order-api đã chụp
-// lại tên và giá vào đơn lúc đặt.
-app.delete('/menu/items/:id', requireAdmin, async (req, res) => {
-  try {
-    const item = await findItem(req.params.id);
-    if (!item) return res.status(404).json({ message: 'Item not found.' });
-
-    await item.deleteOne();
-    await removeImage(item.image);
-
-    res.status(200).json({ id: item.id });
-  } catch (err) {
-    console.log(err.message);
-    res.status(500).json({ message: 'Could not delete item.' });
-  }
-});
-
 // Ảnh đọc thẳng từ thư mục được mount, không qua database.
 app.get('/menu/images/:file', (req, res) => {
   const filePath = path.join(IMAGE_FOLDER, path.basename(req.params.file));

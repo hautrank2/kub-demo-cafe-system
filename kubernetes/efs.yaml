@@ -23,8 +23,9 @@ spec:
   storageClassName: cafe-efs-sc
   csi:
     driver: efs.csi.aws.com
-    # Thay bằng FileSystemId của bạn: aws efs describe-file-systems
-    volumeHandle: fs-0abc123
+    # Thay <file-system-id> bằng FileSystemId của bạn trước khi apply:
+    #   aws efs describe-file-systems --query "FileSystems[].FileSystemId" --output text
+    volumeHandle: fs-0e3bb3d2f53de3075
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

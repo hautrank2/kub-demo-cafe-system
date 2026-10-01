@@ -1,29 +1,29 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from "react";
 
-const money = (n) => `${Number(n).toLocaleString('en-US')} ₫`;
+const money = (n) => `${Number(n).toLocaleString("en-US")} ₫`;
 
 const when = (iso) =>
-  new Date(iso).toLocaleString('en-US', {
-    day: '2-digit',
-    month: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
+  new Date(iso).toLocaleString("en-US", {
+    day: "2-digit",
+    month: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 
 const field =
-  'w-full rounded-xl border border-bean-200 bg-bean-50 px-3.5 py-2.5 text-sm outline-none transition ' +
-  'placeholder:text-bean-400 focus:border-bean-500 focus:ring-2 focus:ring-bean-500/15 ' +
-  'dark:border-bean-800 dark:bg-bean-900/40 dark:placeholder:text-bean-600';
+  "w-full rounded-xl border border-bean-200 bg-bean-50 px-3.5 py-2.5 text-sm outline-none transition " +
+  "placeholder:text-bean-400 focus:border-bean-500 focus:ring-2 focus:ring-bean-500/15 " +
+  "dark:border-bean-800 dark:bg-bean-900/40 dark:placeholder:text-bean-600";
 
 const primary =
-  'rounded-xl bg-bean-800 px-4 py-2.5 text-sm font-semibold text-bean-50 transition ' +
-  'hover:bg-bean-700 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-bean-800 ' +
-  'dark:bg-bean-200 dark:text-bean-900 dark:hover:bg-bean-100 dark:disabled:hover:bg-bean-200';
+  "rounded-xl bg-bean-800 px-4 py-2.5 text-sm font-semibold text-bean-50 transition " +
+  "hover:bg-bean-700 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-bean-800 " +
+  "dark:bg-bean-200 dark:text-bean-900 dark:hover:bg-bean-100 dark:disabled:hover:bg-bean-200";
 
 const ghost =
-  'rounded-xl border border-bean-200 px-3 py-2 text-xs font-medium transition ' +
-  'hover:border-bean-400 hover:bg-bean-100 disabled:opacity-40 ' +
-  'dark:border-bean-800 dark:hover:border-bean-600 dark:hover:bg-bean-900';
+  "rounded-xl border border-bean-200 px-3 py-2 text-xs font-medium transition " +
+  "hover:border-bean-400 hover:bg-bean-100 disabled:opacity-40 " +
+  "dark:border-bean-800 dark:hover:border-bean-600 dark:hover:bg-bean-900";
 
 function Logo() {
   return (
@@ -55,8 +55,10 @@ function useOrderEvents(onEvent, enabled = true) {
 
     const connect = () => {
       // Cùng host với trang, qua nginx (hoặc proxy của Vite) như mọi /api/* khác.
-      const scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
-      socket = new WebSocket(`${scheme}://${window.location.host}/api/orders/ws`);
+      const scheme = window.location.protocol === "https:" ? "wss" : "ws";
+      socket = new WebSocket(
+        `${scheme}://${window.location.host}/api/orders/ws`,
+      );
       socket.onmessage = (e) => {
         let event;
         try {
@@ -88,10 +90,10 @@ function Banner({ message }) {
     <div
       role="status"
       className={
-        'rounded-xl border px-4 py-3 text-sm ' +
-        (message.type === 'ok'
-          ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300'
-          : 'border-red-500/30 bg-red-500/10 text-red-800 dark:text-red-300')
+        "rounded-xl border px-4 py-3 text-sm " +
+        (message.type === "ok"
+          ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300"
+          : "border-red-500/30 bg-red-500/10 text-red-800 dark:text-red-300")
       }
     >
       {message.text}
@@ -100,14 +102,16 @@ function Banner({ message }) {
 }
 
 export default function App() {
-  const [token, setToken] = useState(() => localStorage.getItem('cafe-token') || '');
-  const [email, setEmail] = useState('admin@cafe.local');
-  const [password, setPassword] = useState('');
+  const [token, setToken] = useState(
+    () => localStorage.getItem("cafe-token") || "",
+  );
+  const [email, setEmail] = useState("admin@cafe.local");
+  const [password, setPassword] = useState("");
   const [items, setItems] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState('');
-  const [description, setDescription] = useState('');
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [description, setDescription] = useState("");
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -116,13 +120,13 @@ export default function App() {
   const [rowBusy, setRowBusy] = useState(null);
 
   function logout() {
-    localStorage.removeItem('cafe-token');
-    setToken('');
+    localStorage.removeItem("cafe-token");
+    setToken("");
     setOrders([]);
   }
 
   const loadItems = useCallback(async () => {
-    const res = await fetch('/api/menu/items');
+    const res = await fetch("/api/menu/items");
     const data = await res.json();
     setItems(data.items || []);
   }, []);
@@ -132,14 +136,17 @@ export default function App() {
     setLoadingOrders(true);
 
     try {
-      const res = await fetch('/api/orders', {
+      const res = await fetch("/api/orders", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       /* 401 nghĩa là auth-api đã trả lời và nói không — token hết 8 giờ.
          503 thì khác hẳn: chưa hỏi được auth-api. Đừng đăng xuất vì 503. */
       if (res.status === 401) {
-        setMessage({ type: 'err', text: 'Session expired, please log in again.' });
+        setMessage({
+          type: "err",
+          text: "Session expired, please log in again.",
+        });
         logout();
         return;
       }
@@ -147,13 +154,16 @@ export default function App() {
       const data = await res.json();
 
       if (!res.ok) {
-        setMessage({ type: 'err', text: data.message || 'Could not load orders.' });
+        setMessage({
+          type: "err",
+          text: data.message || "Could not load orders.",
+        });
         return;
       }
 
       setOrders(data.orders || []);
     } catch (err) {
-      setMessage({ type: 'err', text: 'Could not reach order-api.' });
+      setMessage({ type: "err", text: "Could not reach order-api." });
     } finally {
       setLoadingOrders(false);
     }
@@ -167,12 +177,14 @@ export default function App() {
   /* Socket chỉ báo id và status. Đơn mới thì chưa có chi tiết (tên khách, món)
      nên tải lại danh sách qua GET /orders có token; đổi trạng thái thì sửa tại chỗ. */
   useOrderEvents((event) => {
-    if (event.type !== 'order') return;
-    if (event.status === 'new') {
+    if (event.type !== "order") return;
+    if (event.status === "new") {
       loadOrders();
       return;
     }
-    setOrders((prev) => prev.map((o) => (o.id === event.id ? { ...o, status: event.status } : o)));
+    setOrders((prev) =>
+      prev.map((o) => (o.id === event.id ? { ...o, status: event.status } : o)),
+    );
   }, Boolean(token));
 
   async function login(event) {
@@ -181,23 +193,23 @@ export default function App() {
     setBusy(true);
 
     try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
 
       if (!res.ok) {
-        setMessage({ type: 'err', text: data.message || 'Login failed.' });
+        setMessage({ type: "err", text: data.message || "Login failed." });
         return;
       }
 
-      localStorage.setItem('cafe-token', data.token);
+      localStorage.setItem("cafe-token", data.token);
       setToken(data.token);
-      setPassword('');
+      setPassword("");
     } catch (err) {
-      setMessage({ type: 'err', text: 'Could not reach auth-api.' });
+      setMessage({ type: "err", text: "Could not reach auth-api." });
     } finally {
       setBusy(false);
     }
@@ -211,14 +223,14 @@ export default function App() {
     /* multipart/form-data — KHÔNG tự đặt Content-Type, để trình duyệt sinh
        boundary. Đặt tay là menu-api không parse được. */
     const body = new FormData();
-    body.append('name', name);
-    body.append('price', price);
-    body.append('description', description);
-    body.append('image', file);
+    body.append("name", name);
+    body.append("price", price);
+    body.append("description", description);
+    body.append("image", file);
 
     try {
-      const res = await fetch('/api/menu/items', {
-        method: 'POST',
+      const res = await fetch("/api/menu/items", {
+        method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body,
       });
@@ -226,19 +238,22 @@ export default function App() {
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        setMessage({ type: 'err', text: data.message || 'Could not add item.' });
+        setMessage({
+          type: "err",
+          text: data.message || "Could not add item.",
+        });
         return;
       }
 
-      setMessage({ type: 'ok', text: `Added ${data.item.name}.` });
-      setName('');
-      setPrice('');
-      setDescription('');
+      setMessage({ type: "ok", text: `Added ${data.item.name}.` });
+      setName("");
+      setPrice("");
+      setDescription("");
       setFile(null);
       event.target.reset();
       loadItems();
     } catch (err) {
-      setMessage({ type: 'err', text: 'Could not reach menu-api.' });
+      setMessage({ type: "err", text: "Could not reach menu-api." });
     } finally {
       setBusy(false);
     }
@@ -257,7 +272,10 @@ export default function App() {
       });
 
       if (res.status === 401) {
-        setMessage({ type: 'err', text: 'Session expired, please log in again.' });
+        setMessage({
+          type: "err",
+          text: "Session expired, please log in again.",
+        });
         logout();
         return null;
       }
@@ -266,13 +284,13 @@ export default function App() {
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        setMessage({ type: 'err', text: data.message || failText });
+        setMessage({ type: "err", text: data.message || failText });
         return null;
       }
 
       return data;
     } catch (err) {
-      setMessage({ type: 'err', text: 'Could not reach menu-api.' });
+      setMessage({ type: "err", text: "Could not reach menu-api." });
       return null;
     } finally {
       setRowBusy(null);
@@ -286,19 +304,19 @@ export default function App() {
       editing.id,
       `/api/menu/items/${editing.id}`,
       {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: editing.name,
           price: editing.price,
           description: editing.description,
         }),
       },
-      'Could not save item.'
+      "Could not save item.",
     );
 
     if (data) {
-      setMessage({ type: 'ok', text: `Saved ${data.item.name}.` });
+      setMessage({ type: "ok", text: `Saved ${data.item.name}.` });
       setEditing(null);
       loadItems();
     }
@@ -306,39 +324,22 @@ export default function App() {
 
   async function changeImage(item, event) {
     const newFile = event.target.files[0];
-    event.target.value = '';
+    event.target.value = "";
     if (!newFile) return;
 
     // Cùng lý do như addItem: không tự đặt Content-Type cho FormData.
     const body = new FormData();
-    body.append('image', newFile);
+    body.append("image", newFile);
 
     const data = await sendItem(
       item.id,
       `/api/menu/items/${item.id}/image`,
-      { method: 'PUT', body },
-      'Could not change image.'
+      { method: "PUT", body },
+      "Could not change image.",
     );
 
     if (data) {
-      setMessage({ type: 'ok', text: `Changed image of ${data.item.name}.` });
-      loadItems();
-    }
-  }
-
-  async function deleteItem(item) {
-    if (!window.confirm(`Delete "${item.name}"? Its image will be deleted too.`)) return;
-
-    const data = await sendItem(
-      item.id,
-      `/api/menu/items/${item.id}`,
-      { method: 'DELETE' },
-      'Could not delete item.'
-    );
-
-    if (data) {
-      setMessage({ type: 'ok', text: `Deleted ${item.name}.` });
-      if (editing && editing.id === item.id) setEditing(null);
+      setMessage({ type: "ok", text: `Changed image of ${data.item.name}.` });
       loadItems();
     }
   }
@@ -350,7 +351,9 @@ export default function App() {
           <div className="flex items-center gap-3">
             <Logo />
             <div>
-              <h1 className="text-base font-semibold tracking-tight">Cafe System · Admin</h1>
+              <h1 className="text-base font-semibold tracking-tight">
+                Cafe System · Admin
+              </h1>
               <p className="text-xs text-bean-500 dark:text-bean-400">
                 Account is configured via auth-api environment variables
               </p>
@@ -364,12 +367,20 @@ export default function App() {
             className="space-y-3 rounded-2xl border border-bean-200 p-5 dark:border-bean-800 dark:bg-bean-900/30"
           >
             <label className="block space-y-1.5">
-              <span className="text-xs font-medium text-bean-500 dark:text-bean-400">Email</span>
-              <input className={field} value={email} onChange={(e) => setEmail(e.target.value)} />
+              <span className="text-xs font-medium text-bean-500 dark:text-bean-400">
+                Email
+              </span>
+              <input
+                className={field}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </label>
 
             <label className="block space-y-1.5">
-              <span className="text-xs font-medium text-bean-500 dark:text-bean-400">Password</span>
+              <span className="text-xs font-medium text-bean-500 dark:text-bean-400">
+                Password
+              </span>
               <input
                 className={field}
                 type="password"
@@ -379,8 +390,12 @@ export default function App() {
               />
             </label>
 
-            <button type="submit" disabled={busy || !password} className={`${primary} w-full`}>
-              {busy ? 'Checking…' : 'Log in'}
+            <button
+              type="submit"
+              disabled={busy || !password}
+              className={`${primary} w-full`}
+            >
+              {busy ? "Checking…" : "Log in"}
             </button>
           </form>
         </div>
@@ -394,8 +409,12 @@ export default function App() {
         <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3.5">
           <Logo />
           <div className="min-w-0 flex-1">
-            <h1 className="truncate text-base font-semibold tracking-tight">Cafe System · Admin</h1>
-            <p className="truncate text-xs text-bean-500 dark:text-bean-400">{email}</p>
+            <h1 className="truncate text-base font-semibold tracking-tight">
+              Cafe System · Admin
+            </h1>
+            <p className="truncate text-xs text-bean-500 dark:text-bean-400">
+              {email}
+            </p>
           </div>
           <button type="button" onClick={logout} className={ghost}>
             Log out
@@ -458,25 +477,33 @@ export default function App() {
                   </span>
                 )}
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate">{file ? file.name : 'Choose image'}</span>
+                  <span className="block truncate">
+                    {file ? file.name : "Choose image"}
+                  </span>
                   <span className="block text-xs text-bean-500 dark:text-bean-400">
-                    {file ? `${(file.size / 1024).toFixed(0)} KB` : 'Required · JPEG, PNG, GIF, WebP · max 2MB'}
+                    {file
+                      ? `${(file.size / 1024).toFixed(0)} KB`
+                      : "Required · JPEG, PNG, GIF, WebP · max 2MB"}
                   </span>
                 </span>
               </label>
 
               <button
                 type="submit"
-                disabled={busy || !name.trim() || price === '' || !file}
+                disabled={busy || !name.trim() || price === "" || !file}
                 className={`${primary} w-full`}
               >
-                {busy ? 'Saving…' : 'Add item'}
+                {busy ? "Saving…" : "Add item"}
               </button>
 
               {/* Nói rõ vì sao nút đang tắt, thay vì để người dùng tự đoán. */}
-              {!busy && (!name.trim() || price === '' || !file) && (
+              {!busy && (!name.trim() || price === "" || !file) && (
                 <p className="text-center text-xs text-bean-500 dark:text-bean-400">
-                  {!name.trim() ? 'Enter a name' : price === '' ? 'Enter a price' : 'Choose an image'}
+                  {!name.trim()
+                    ? "Enter a name"
+                    : price === ""
+                      ? "Enter a price"
+                      : "Choose an image"}
                 </p>
               )}
             </form>
@@ -488,7 +515,9 @@ export default function App() {
                 <h2 className="text-sm font-semibold uppercase tracking-wider text-bean-500 dark:text-bean-400">
                   Current menu
                 </h2>
-                <span className="text-xs text-bean-500 dark:text-bean-400">{items.length} {items.length === 1 ? 'item' : 'items'}</span>
+                <span className="text-xs text-bean-500 dark:text-bean-400">
+                  {items.length} {items.length === 1 ? "item" : "items"}
+                </span>
               </div>
 
               {items.length === 0 ? (
@@ -517,7 +546,9 @@ export default function App() {
                             <span className="size-12 shrink-0 rounded-lg bg-bean-100 dark:bg-bean-900" />
                           )}
                           <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-medium">{item.name}</p>
+                            <p className="truncate text-sm font-medium">
+                              {item.name}
+                            </p>
                             {item.description && (
                               <p className="truncate text-xs text-bean-500 dark:text-bean-400">
                                 {item.description}
@@ -527,11 +558,6 @@ export default function App() {
                               {money(item.price)}
                             </p>
                           </div>
-                          {/* Tên file ảnh: thứ duy nhất database giữ. Không có file
-                              tương ứng trên volume thì ảnh bên trên sẽ trống. */}
-                          <code className="hidden max-w-28 truncate text-[0.65rem] text-bean-400 sm:block dark:text-bean-600">
-                            {item.image || 'no image'}
-                          </code>
                         </div>
 
                         {isEditing ? (
@@ -539,7 +565,9 @@ export default function App() {
                             <input
                               className={field}
                               value={editing.name}
-                              onChange={(e) => setEditing({ ...editing, name: e.target.value })}
+                              onChange={(e) =>
+                                setEditing({ ...editing, name: e.target.value })
+                              }
                               placeholder="Item name"
                             />
                             <input
@@ -549,23 +577,37 @@ export default function App() {
                               step="any"
                               inputMode="decimal"
                               value={editing.price}
-                              onChange={(e) => setEditing({ ...editing, price: e.target.value })}
+                              onChange={(e) =>
+                                setEditing({
+                                  ...editing,
+                                  price: e.target.value,
+                                })
+                              }
                               placeholder="Price"
                             />
                             <textarea
                               className={field}
                               rows={2}
                               value={editing.description}
-                              onChange={(e) => setEditing({ ...editing, description: e.target.value })}
+                              onChange={(e) =>
+                                setEditing({
+                                  ...editing,
+                                  description: e.target.value,
+                                })
+                              }
                               placeholder="Description (optional)"
                             />
                             <div className="flex gap-2">
                               <button
                                 type="submit"
-                                disabled={isBusy || !editing.name.trim() || editing.price === ''}
+                                disabled={
+                                  isBusy ||
+                                  !editing.name.trim() ||
+                                  editing.price === ""
+                                }
                                 className={`${primary} flex-1 py-2 text-xs`}
                               >
-                                {isBusy ? 'Saving…' : 'Save'}
+                                {isBusy ? "Saving…" : "Save"}
                               </button>
                               <button
                                 type="button"
@@ -587,7 +629,7 @@ export default function App() {
                                   id: item.id,
                                   name: item.name,
                                   price: String(item.price),
-                                  description: item.description || '',
+                                  description: item.description || "",
                                 })
                               }
                               className={ghost}
@@ -597,7 +639,7 @@ export default function App() {
                             {/* Chọn file xong là tải lên ngay. menu-api xoá ảnh cũ sau khi
                                 đã trỏ món sang ảnh mới. */}
                             <label
-                              className={`${ghost} cursor-pointer ${isBusy ? 'pointer-events-none opacity-40' : ''}`}
+                              className={`${ghost} cursor-pointer ${isBusy ? "pointer-events-none opacity-40" : ""}`}
                             >
                               <input
                                 type="file"
@@ -606,16 +648,12 @@ export default function App() {
                                 disabled={isBusy}
                                 className="sr-only"
                               />
-                              {isBusy ? 'Working…' : item.image ? 'Change image' : 'Add image'}
+                              {isBusy
+                                ? "Working…"
+                                : item.image
+                                  ? "Change image"
+                                  : "Add image"}
                             </label>
-                            <button
-                              type="button"
-                              disabled={isBusy}
-                              onClick={() => deleteItem(item)}
-                              className={`${ghost} ml-auto text-red-700 hover:border-red-400 hover:bg-red-500/10 dark:text-red-300 dark:hover:border-red-500/60 dark:hover:bg-red-500/10`}
-                            >
-                              Delete
-                            </button>
                           </div>
                         )}
                       </li>
@@ -630,8 +668,13 @@ export default function App() {
                 <h2 className="text-sm font-semibold uppercase tracking-wider text-bean-500 dark:text-bean-400">
                   Recent orders
                 </h2>
-                <button type="button" onClick={loadOrders} disabled={loadingOrders} className={ghost}>
-                  {loadingOrders ? 'Loading…' : 'Reload'}
+                <button
+                  type="button"
+                  onClick={loadOrders}
+                  disabled={loadingOrders}
+                  className={ghost}
+                >
+                  {loadingOrders ? "Loading…" : "Reload"}
                 </button>
               </div>
 
@@ -652,10 +695,10 @@ export default function App() {
                         </p>
                         <span
                           className={
-                            'rounded-full px-2 py-0.5 text-[0.65rem] font-medium uppercase tracking-wide ' +
-                            (order.status === 'received'
-                              ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
-                              : 'bg-bean-100 text-bean-600 dark:bg-bean-800 dark:text-bean-300')
+                            "rounded-full px-2 py-0.5 text-[0.65rem] font-medium uppercase tracking-wide " +
+                            (order.status === "received"
+                              ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                              : "bg-bean-100 text-bean-600 dark:bg-bean-800 dark:text-bean-300")
                           }
                         >
                           {order.status}
@@ -668,17 +711,27 @@ export default function App() {
                       <ul className="mt-2 space-y-0.5 text-sm text-bean-600 dark:text-bean-300">
                         {order.lines.map((l, i) => (
                           <li key={i} className="flex gap-2">
-                            <span className="w-6 shrink-0 tabular-nums">{l.quantity}×</span>
-                            <span className="min-w-0 flex-1 truncate">{l.name}</span>
+                            <span className="w-6 shrink-0 tabular-nums">
+                              {l.quantity}×
+                            </span>
+                            <span className="min-w-0 flex-1 truncate">
+                              {l.name}
+                            </span>
                             {/* Giá chụp lại lúc đặt, không đọc lại từ menu. */}
-                            <span className="tabular-nums">{money(l.price * l.quantity)}</span>
+                            <span className="tabular-nums">
+                              {money(l.price * l.quantity)}
+                            </span>
                           </li>
                         ))}
                       </ul>
 
                       <div className="mt-2 flex items-baseline gap-3 text-xs text-bean-500 dark:text-bean-400">
-                        <span className="min-w-0 flex-1 truncate italic">{order.note || '—'}</span>
-                        <span className="shrink-0 tabular-nums">{when(order.createdAt)}</span>
+                        <span className="min-w-0 flex-1 truncate italic">
+                          {order.note || "—"}
+                        </span>
+                        <span className="shrink-0 tabular-nums">
+                          {when(order.createdAt)}
+                        </span>
                       </div>
                     </li>
                   ))}

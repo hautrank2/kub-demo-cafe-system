@@ -13,7 +13,6 @@ lưu trữ: metadata vào MongoDB, file ảnh vào một thư mục trên đĩa.
 | `POST` | `/menu/items` | **Có** | admin-web |
 | `PUT` | `/menu/items/:id` | **Có** | admin-web (nút Edit) |
 | `PUT` | `/menu/items/:id/image` | **Có** | admin-web (nút Change image) |
-| `DELETE` | `/menu/items/:id` | **Có** | admin-web (nút Delete) |
 | `GET` | `/menu/images/:file` | Không | thẻ `<img>` của cả hai frontend |
 | `GET` | `/menu/health` | Không | bạn, và probe |
 
@@ -39,7 +38,7 @@ thì nằm trên đĩa.** Hai thứ này có thể lệch nhau, và không có r
 | Có file, không có bản ghi | File nằm đó chiếm chỗ, không ai thấy |
 
 Code cố giữ hai thứ khớp nhau: request `POST` bị từ chối thì xoá file multer vừa ghi; đổi
-ảnh thì xoá file cũ; xoá món thì xoá luôn file. Nhưng vẫn không có transaction nào bọc cả
+ảnh thì xoá file cũ. Nhưng vẫn không có transaction nào bọc cả
 MongoDB lẫn đĩa — tiến trình chết giữa chừng thì vẫn lệch được.
 
 ---
@@ -205,30 +204,6 @@ file mới và giữ nguyên ảnh cũ — món không bao giờ bị mất ản
 | `413` | `Image is larger than 2MB.` | File > 2MB |
 | `422` | `Missing image (JPEG, PNG, GIF or WebP).` | Không gửi `image`, hoặc file không phải ảnh |
 | `500` | `Could not change image.` | Lỗi MongoDB |
-
----
-
-## `DELETE /menu/items/:id`
-
-Xoá món **và file ảnh của nó** trên volume.
-
-```bash
-curl -i -X DELETE http://localhost:8213/menu/items/66f0a1b2c3d4e5f60718293a \
-  -H "Authorization: Bearer $TOKEN"
-```
-
-**Response `200`** — `{ "id": "66f0a1b2c3d4e5f60718293a" }`
-
-**Lỗi**
-
-| Mã | `message` | Nguyên nhân |
-| --- | --- | --- |
-| `401` / `503` | | Như `POST /menu/items` |
-| `404` | `Item not found.` | Không có món với `id` này |
-| `500` | `Could not delete item.` | Lỗi MongoDB |
-
-Đơn cũ có món này vẫn hiện bình thường, vì đơn giữ bản sao tên và giá. Nhưng giỏ hàng của
-khách đang mở shop-web từ trước sẽ nhận `422 Item <id> not found` khi đặt — bấm Reload là hết.
 
 ---
 
