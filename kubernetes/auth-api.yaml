@@ -5,7 +5,6 @@ metadata:
 spec:
   selector:
     app: auth
-  # ClusterIP: auth chỉ được gọi từ trong cụm, không bao giờ từ internet.
   type: ClusterIP
   ports:
     - protocol: TCP
@@ -28,14 +27,13 @@ spec:
     spec:
       containers:
         - name: auth-api
-          # Thay bằng tài khoản Docker Hub của bạn, và tăng tag mỗi lần build lại.
           image: hautrank2/kub-cafe-auth:1
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
           env:
             - name: TOKEN_KEY
-              value: 'doi-chuoi-nay-di'
+              value: 'jjoi231kdldjk2134'
             - name: ADMIN_EMAIL
               value: 'admin@cafe.local'
             - name: ADMIN_PASSWORD

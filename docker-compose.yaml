@@ -8,7 +8,7 @@ services:
     build: ./auth-api
     image: hautrank2/kub-cafe-auth:1
     environment:
-      TOKEN_KEY: 'doi-chuoi-nay-di'
+      TOKEN_KEY: 'jjoi231kdldjk2134'
       ADMIN_EMAIL: 'admin@cafe.local'
       ADMIN_PASSWORD: 'cafe1234'
 

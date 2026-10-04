@@ -3,8 +3,6 @@ kind: Service
 metadata:
   name: cafe-shop-web-service
   annotations:
-    # Bắt buộc trên cụm dùng AWS Load Balancer Controller hoặc EKS Auto Mode:
-    # không khai thì nó dựng NLB internal, và bạn nhận ENOTFOUND khi gọi từ ngoài.
     service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
 spec:
   selector:

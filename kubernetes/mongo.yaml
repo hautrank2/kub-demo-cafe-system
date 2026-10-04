@@ -5,8 +5,6 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  # Trên EKS, class này cần add-on aws-ebs-csi-driver. Trên k3d thì đổi
-  # thành local-path, hoặc bỏ dòng này để dùng class mặc định.
   storageClassName: gp2
   resources:
     requests:
@@ -19,11 +17,11 @@ metadata:
 spec:
   selector:
     app: mongo
-  type: ClusterIP
   ports:
     - protocol: TCP
       port: 27017
       targetPort: 27017
+  type: ClusterIP
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -31,10 +29,6 @@ metadata:
   name: cafe-mongo-deployment
 spec:
   replicas: 1
-  # Recreate: xoá Pod cũ xong mới tạo Pod mới. Mặc định RollingUpdate sẽ có
-  # hai Pod cùng đòi một volume ReadWriteOnce, và Pod mới kẹt mãi.
-  strategy:
-    type: Recreate
   selector:
     matchLabels:
       app: mongo
